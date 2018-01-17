@@ -15,8 +15,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy" : "npm run build&&gh-pages -d build",
-    "homepage": "https://victor-cabrera.github.io/smb3_concentration/"
+    "homepage": "https://victor-cabrera.github.io/smb3_concentration/",
+    "deploy" : "npm run build && gh-pages -d build"
   },
   "devDependencies": {
     "eslint-config-airbnb": "^16.1.0",
