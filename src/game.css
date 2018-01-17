@@ -1,0 +1,120 @@
+.card-wrapper {
+    float: left;
+    position: relative;
+    margin: 20px 15px;
+    height: 197px;
+    width: 137px;
+    -webkit-perspective: 800px;
+    -moz-perspective: 800px;
+    -ms-perspective: 800px;
+    -o-perspective: 800px;
+    perspective: 800px;
+}
+
+.card-wrapper .card {
+    width: 100%;
+    height: 100%;
+    -webkit-transition: -webkit-transform 1s;
+    -moz-transition: -moz-transform 1s;
+    -o-transition: -o-transform 1s;
+    transition: transform 1s;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+
+.card-wrapper .card div {
+    width: 100%;
+    height: 100%;
+    background-image: url(assets/images/cards.png);
+    background-repeat: no-repeat;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.card-wrapper .card.flipped {
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+}
+
+.card-wrapper .card .bottom {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: #ffbaaa;
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+}
+
+.card-wrapper .card .bottom.coins10 {
+    background-position: -573px 0;
+}
+
+.card-wrapper .card .bottom.coins20 {
+    background-position: -764px 0;
+}
+
+.card-wrapper .card .bottom.flower {
+    background-position: -191px 0;
+}
+
+.card-wrapper .card .bottom.freeGuy {
+    background-position: -955px 0;
+}
+
+.card-wrapper .card .bottom.mushroom {
+    background-position: 0 0;
+}
+
+.card-wrapper .card .bottom.star {
+    background-position: -382px 0;
+}
+
+
+
+.card-wrapper .card .top {
+    background-color: #fff;
+    background-position: -1153px 0;
+}
+
+.container {
+    max-width: 1002px;
+    margin: 0 auto;
+}
+
+.game {
+  text-align: center;
+}
+
+.menu {
+  margin: 20px 0;
+  text-align: center;
+  color: #fff;
+  font-family: 'Press Start 2P';
+}
+
+.menu .divider {
+    color: gray;
+}
+
+.menu .reset {
+    cursor: pointer;
+    background-color: gray;
+    padding: 10px;
+}
+
+.menu p {
+  display: inline-block;
+  margin: 0 10px;
+}
