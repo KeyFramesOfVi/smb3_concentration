@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import App from './App';
 
+const Cookies = require('js-cookie');
+
 const range = (n) => {
   const result = [];
 
@@ -44,12 +46,18 @@ class AppContainer extends Component {
     this.state = {
       cards: createDeck(18),
       attempts: 0,
-      bestScore: null,
+      bestScore: Cookies.get('bestScore'),
+      matchSound: new Audio('./assets/audio/match.wav'),
+      noMatchSound: new Audio('./assets/audio/no-match.wav'),
+      winSound: new Audio('./assets/audio/win.wav'),
     };
     this.flipFirst = this.flipFirst.bind(this);
     this.flipSecond = this.flipSecond.bind(this);
     this.randomizeDeck = this.randomizeDeck.bind(this);
     this.reset = this.reset.bind(this);
+    this.playMatchSound = this.playMatchSound.bind(this);
+    this.playNoMatchSound = this.playNoMatchSound.bind(this);
+    this.playWinSound = this.playWinSound.bind(this);
   }
 
   randomizeDeck() {
@@ -102,14 +110,8 @@ class AppContainer extends Component {
       cards: this.state.cards.map((card) => {
         if (index === card.index) {
           // return Object.assign({}, card, { inPlay: true} );
-          if (typeof window.Audio === "function") {
-            const audio = new Audio('./assets/audio/match.wav');
-            console.log(audio);
-            audio.play();
-          }
           return { ...card, inPlay: true };
         }
-
         return card;
       }),
     });
@@ -120,6 +122,7 @@ class AppContainer extends Component {
 
   checkMatch() {
     if (this.isWinner()) {
+      this.playMatchSound();
       const cards = this.state.cards.map((card) => {
         return { ...card, inPlay: false, isMatched: card.inPlay ? true : card.isMatched }
       });
@@ -127,8 +130,9 @@ class AppContainer extends Component {
       this.setState({
         cards,
         bestScore: this.calculateBestScore(cards)
-      })
+      });
     } else {
+      this.playNoMatchSound();
       this.setState({
         cards: this.state.cards.map((card) => {
           return { ...card, inPlay: false }
@@ -142,9 +146,12 @@ class AppContainer extends Component {
         card.isMatched
         )).length === cards.length
     ) {
-      return typeof this.state.bestScore === 'number' ?
+      this.playWinSound();
+      const newBestScore = typeof this.state.bestScore === 'number' ?
         Math.min(this.state.bestScore, this.state.attempts) : 
         this.state.attempts;
+      Cookies.set('bestScore', newBestScore);
+      return newBestScore;
     } else {
       return this.state.bestScore;
     }
@@ -157,6 +164,20 @@ class AppContainer extends Component {
     return flippedCards[0].label === flippedCards[1].label;
   }
 
+  playMatchSound() {
+    console.log(this.state.matchSound);
+    this.state.matchSound.play();
+  }
+
+  playNoMatchSound() {
+    console.log(this.state.noMatchSound);
+    this.state.noMatchSound.play();
+  }
+
+  playWinSound() {
+    console.log(this.state.winSound);
+    this.state.winSound.play();
+  }
   render() {
     return (
       <App
