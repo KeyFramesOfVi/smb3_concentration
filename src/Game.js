@@ -5,13 +5,15 @@ import Board from './Board';
 function Game(props) {
   return (
     <div className="container">
-      <Menu attempts={props.attempts} 
-            bestScore={props.bestScore} 
-            reset={props.reset}
+      <Menu
+        attempts={props.attempts}
+        bestScore={props.bestScore}
+        reset={props.reset}
       />
-      <Board cards={props.cards} 
-             flipFirst={props.flipFirst}
-             flipSecond={props.flipSecond} 
+      <Board
+        cards={props.cards}
+        flipFirst={props.flipFirst}
+        flipSecond={props.flipSecond}
       />
     </div>
   );

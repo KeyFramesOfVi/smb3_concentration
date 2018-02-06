@@ -1,199 +1,32 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import App from './App';
 
-const Cookies = require('js-cookie');
-
-const range = (n) => {
-  const result = [];
-
-  for (let i = 0; i < n; i += 1) {
-    result.push(i);
-  }
-
-  return result;
-};
-
-const createCard = (label, index) => ({
-  inPlay: false,
-  label,
-  index,
-  isMatched: false,
-});
-
-const createDeck = (n) => {
-  const labelArray = ['coins10', 'coins10', 'coins20', 'coins20', 'freeGuy', 'freeGuy',
-    'mushroom', 'mushroom', 'mushroom', 'mushroom', 'flower', 'flower',
-    'flower', 'flower', 'star', 'star', 'star', 'star'];
-  let labelSize = n;
-  let i;
-  let temp;
-  while (labelSize) {
-    i = Math.floor(Math.random() * labelSize);
-    labelSize -= 1;
-    temp = labelArray[labelSize];
-    labelArray[labelSize] = labelArray[i];
-    labelArray[i] = temp;
-  }
-
-  return range(n).map((index) => (
-    createCard(labelArray[index], index)
-  ));
-}
-class AppContainer extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      cards: createDeck(18),
-      attempts: 0,
-      bestScore: Cookies.get('bestScore'),
-      matchSound: new Audio('./assets/audio/match.wav'),
-      noMatchSound: new Audio('./assets/audio/no-match.wav'),
-      winSound: new Audio('./assets/audio/win.wav'),
-    };
-    this.flipFirst = this.flipFirst.bind(this);
-    this.flipSecond = this.flipSecond.bind(this);
-    this.randomizeDeck = this.randomizeDeck.bind(this);
-    this.reset = this.reset.bind(this);
-    this.playMatchSound = this.playMatchSound.bind(this);
-    this.playNoMatchSound = this.playNoMatchSound.bind(this);
-    this.playWinSound = this.playWinSound.bind(this);
-  }
-
-  randomizeDeck() {
-    const cards = this.state.cards;
-    let n = cards.length;
-    let i;
-    let temp;
-    while (n) {
-      i = Math.floor(Math.random() * n);
-      n -= 1;
-      temp = cards[n];
-      cards[n] = cards[i];
-      cards[i] = temp;
-      cards[n].index = n;
-      cards[i].index = i;
+export default connect(
+  state => (
+    {
+      cards: state.cards,
+      attempts: state.attempts,
+      bestScore: state.bestScore,
     }
-    this.setState({
-      cards: cards,
-    });
-  }
-
-  reset() {
-    this.setState({
-      cards: this.state.cards.map((card, index) => (
-        { ...card, inPlay: false, isMatched: false }
-      )),
-      attempts: 0,
-    });
-    setTimeout(() => {
-      this.randomizeDeck();
-    }, 500);
-  }
-
-  flipFirst(index) {
-    this.setState({
-      cards: this.state.cards.map((card) => {
-        if (index === card.index) {
-          // return Object.assign({}, card, { inPlay: true} );
-          return { ...card, inPlay: true };
-        }
-
-        return card;
+  ),
+  dispatch => (
+    {
+      flipFirst: index => dispatch({ type: 'FLIP_FIRST', index }),
+      reset: () => dispatch((dispatch) => {
+        dispatch({ type: 'RESET' });
+        setTimeout(() => {
+          dispatch({ type: 'RANDOMIZE_DECK' });
+        }, 500);
       }),
-      attempts: this.state.attempts + 1,
-    });
-  }
-
-  flipSecond(index) {
-    this.setState({
-      cards: this.state.cards.map((card) => {
-        if (index === card.index) {
-          // return Object.assign({}, card, { inPlay: true} );
-          return { ...card, inPlay: true };
-        }
-        return card;
+      flipSecond: index => dispatch((dispatch, getState) => {
+        dispatch({ type: 'FLIP_SECOND', index });
+        setTimeout(() => {
+          dispatch({ type: 'CHECK_MATCH' });
+          const state = getState();
+          dispatch({ type: 'CALCULATE_BEST_SCORE', cards: state.cards, attempts: state.attempts });
+        }, 700);
       }),
-    });
-    setTimeout(() => {
-      this.checkMatch();
-    }, 700);
-  }
-
-  checkMatch() {
-    if (this.isWinner()) {
-      this.playMatchSound();
-      const cards = this.state.cards.map((card) => {
-        return { ...card, inPlay: false, isMatched: card.inPlay ? true : card.isMatched }
-      });
-
-      this.setState({
-        cards,
-        bestScore: this.calculateBestScore(cards)
-      });
-    } else {
-      this.playNoMatchSound();
-      this.setState({
-        cards: this.state.cards.map((card) => {
-          return { ...card, inPlay: false }
-        })
-      })
     }
-  }
-
-  calculateBestScore(cards) {
-    if (cards.filter((card) => (
-        card.isMatched
-        )).length === cards.length
-    ) {
-      this.playWinSound();
-      const newBestScore = typeof this.state.bestScore === 'number' ?
-        Math.min(this.state.bestScore, this.state.attempts) : 
-        this.state.attempts;
-      Cookies.set('bestScore', newBestScore);
-      return newBestScore;
-    } else {
-      return this.state.bestScore;
-    }
-  }
-
-  isWinner() {
-    const flippedCards = this.state.cards.filter((card) => (
-      card.inPlay
-    ));
-    return flippedCards[0].label === flippedCards[1].label;
-  }
-
-  playMatchSound() {
-    console.log(this.state.matchSound);
-    this.state.matchSound.play();
-  }
-
-  playNoMatchSound() {
-    console.log(this.state.noMatchSound);
-    this.state.noMatchSound.play();
-  }
-
-  playWinSound() {
-    console.log(this.state.winSound);
-    this.state.winSound.play();
-  }
-  render() {
-    return (
-      <App
-        flipFirst={this.flipFirst}
-        flipSecond={this.flipSecond}
-        reset={this.reset}
-        cards={this.state.cards}
-        attempts={this.state.attempts}
-        bestScore={this.state.bestScore}
-      />
-    );
-  }
-}
-
-function checkMatch(card_one, card_two) {
-  return card_one.label === card_two.label;
-}
-
-export default AppContainer;
+  ),
+)(App);
