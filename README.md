@@ -7,4 +7,4 @@ https://github.com/callmehiphop/mario-cards
 The goal as my first React/Redux application was to do proper mimickry of this app using React.
 If you want to test the app, it is hosted here:
 
-https://victor-cabrera.github.io/smb3_concentration/
+[SMB3 Concentration Card Game](https://keyframesofvi.github.io/smb3_concentration/)
